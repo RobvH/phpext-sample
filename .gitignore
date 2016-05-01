@@ -24,3 +24,22 @@
 *.tar.bz2.asc
 *.tar.xz.asc
 
+configure.in
+ltmain.sh
+libs.mk
+build
+scan_makefile_in.awk
+Makefile.global
+acinclude.m4
+config.sub
+
+aclocal.m4
+autom4te.cache
+config.guess
+config.h.in
+configure
+install-sh
+missing
+mkinstalldirs
+run-tests.php
+
