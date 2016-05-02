@@ -1,9 +1,9 @@
+#include <php.h>
+
 #include "php_sample.h"
 
 zend_module_entry sample_module_entry = {
-#if ZEND_MODULE_API_NO >= 20010901 /* maintains < PHP 4.2 compat, lol */
 	STANDARD_MODULE_HEADER,
-#endif
 	PHP_SAMPLE_EXTNAME,
 	NULL, /* Functions */
 	NULL, /* MINIT */
@@ -11,9 +11,7 @@ zend_module_entry sample_module_entry = {
 	NULL, /* RINIT */
 	NULL, /* RSHUTDOWN */
 	NULL, /* MINFO */
-#if ZEND_MODULE_API_NO >= 20010901
 	PHP_SAMPLE_EXTVER,
-#endif
 	STANDARD_MODULE_PROPERTIES
 };
 

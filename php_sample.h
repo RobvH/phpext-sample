@@ -5,15 +5,19 @@
 #define PHP_SAMPLE_EXTNAME    "sample"
 #define PHP_SAMPLE_EXTVER     "1.0"
 
+#ifdef ZTS
+#include "TSRM.h"
+#endif
+
 /* Import configure options 
    when building outside the PHP
    source tree */
-#ifndef HAVE_CONFIG_H
+#ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
 /* Include the php std header */
-#include "php.h"
+#include <php.h>
 
 /* Define the entry point symbol
  * Zend will use when loading this module

@@ -24,12 +24,16 @@
 *.tar.bz2.asc
 *.tar.xz.asc
 
+.deps
+.libs
+libtool
+modules
 configure.in
 ltmain.sh
 libs.mk
 build
 scan_makefile_in.awk
-Makefile.global
+Makefile*
 acinclude.m4
 config.sub
 
@@ -37,6 +41,10 @@ aclocal.m4
 autom4te.cache
 config.guess
 config.h.in
+config.h
+config.log
+config.nice
+config.status
 configure
 install-sh
 missing
