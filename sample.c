@@ -1,11 +1,20 @@
-#include <php.h>
-
 #include "php_sample.h"
+
+PHP_FUNCTION(sample_hello_world)
+{
+	php_printf("Hello World!\n");
+}
+
+static zend_function_entry php_sample_functions[] = {   /* function_entry seems to be replaced with zend_function_entry */
+	PHP_FE(sample_hello_world,         NULL)
+	PHP_FALIAS(sample_hi, sample_hello_world, NULL)
+	{ NULL, NULL, NULL }
+};
 
 zend_module_entry sample_module_entry = {
 	STANDARD_MODULE_HEADER,
 	PHP_SAMPLE_EXTNAME,
-	NULL, /* Functions */
+	php_sample_functions, /* Functions */
 	NULL, /* MINIT */
 	NULL, /* MSHUTDOWN */
 	NULL, /* RINIT */
