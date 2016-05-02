@@ -12,10 +12,16 @@ PHP_FUNCTION(sample_long)
 	return;
 }
 
+PHP_FUNCTION(sample_return_long)
+{
+	RETURN_LONG(42);	/* reference table on pg 69 */
+}
+
 static zend_function_entry php_sample_functions[] = {   /* function_entry seems to be replaced with zend_function_entry */
 	PHP_FE(sample_hello_world,         NULL)
 	PHP_FALIAS(sample_hi, sample_hello_world, NULL)
 	PHP_FE(sample_long, NULL)
+	PHP_FE(sample_return_long, NULL)
 	{ NULL, NULL, NULL }
 };
 
