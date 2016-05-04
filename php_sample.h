@@ -27,8 +27,17 @@ extern zend_module_entry sample_module_entry;
 
 #if (PHP_MAJOR_VERSION > 5 || (PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 0))
 // static 
+                          /* name, pass_rest_by_reference, return_reference, requried_num_args */
     ZEND_BEGIN_ARG_INFO_EX(php_sample_retref_arginfo, 0, 1, 0)
     ZEND_END_ARG_INFO ()
 #endif /* PHP >= 5.1.0 */
+
+#ifdef ZEND_ENGINE_2
+ZEND_BEGIN_ARG_INFO(php_sample_byref_arginfo, 0) /* pass_rest_by_reference = 0 */
+	ZEND_ARG_PASS_INFO(1) /* byref = 1 */
+ZEND_END_ARG_INFO()
+#else
+static unsigned char php_sample_byref_arginfo[] = { 1, BYREF_FORCE };
+#endif
 
 #endif /* PHP_SAMPLE_H */

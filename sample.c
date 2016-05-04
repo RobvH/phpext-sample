@@ -103,8 +103,33 @@ PHP_FUNCTION(sample_reference_a)
 
 	*return_value_ptr = a;
 }
-
 #endif /* PHP >= 5.1.0 */
+
+PHP_FUNCTION(sample_byref_calltime) /* calltime pass by reference is removed */ 
+{
+	zval *a;
+	int addtl_len = sizeof(" (modified by ref!)") - 1;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &a) == FAILURE) {
+		RETURN_NULL();
+	}
+
+	if (!zval_isref_p(a)) {
+		/* parameter was not passed by reference,
+		 * leave without doing anything
+		 */
+		return;
+	}
+	/* Make sure the variable is a string */
+	convert_to_string(a);
+
+	/* Enlarge a's buffer to hold the additional data */
+	Z_STRVAL_P(a) = erealloc(Z_STRVAL_P(a), Z_STRLEN_P(a) + addtl_len + 1);
+
+	memcpy(Z_STRVAL_P(a) + Z_STRLEN_P(a), " (modified by ref!)", addtl_len + 1);
+
+	Z_STRLEN_P(a) += addtl_len;
+}
 
 static zend_function_entry php_sample_functions[] = {   /* function_entry seems to be replaced with zend_function_entry */
 	PHP_FE(sample_hello_world,         NULL)
@@ -115,6 +140,8 @@ static zend_function_entry php_sample_functions[] = {   /* function_entry seems 
 #if (PHP_MAJOR_VERSION > 5 || (PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 0))
 	PHP_FE(sample_reference_a, php_sample_retref_arginfo)
 #endif
+	PHP_FE(sample_byref_calltime, NULL)
+	PHP_FALIAS(sample_byref_compiletime, sample_byref_calltime, php_sample_byref_arginfo)
 	{ NULL, NULL, NULL }
 };
 
