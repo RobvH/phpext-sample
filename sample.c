@@ -39,12 +39,82 @@ PHP_FUNCTION(sample_array_range)
 	RETURN_NULL();
 }
 
+#if (PHP_MAJOR_VERSION > 5 || (PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 0))
+
+/*  function &sample_reference_a() 
+ *  {
+ *      if (!isset($GLOBALS['a'])) {
+ *          $GLOBALS['a'] = null;
+ *      }
+ *      
+ *      return $GLOBALS['a'];
+ *  }    
+ */
+
+/* Result:
+ * $a = 1;
+ * $c = $a;
+ * $b =& sample_reference_a();
+ * $b = 2;
+ * $c = 3;
+ * echo $a . ' ' . $b . ' ' . $c . PHP_EOL;
+ * OUTPUT: 2 2 3
+ */
+
+PHP_FUNCTION(sample_reference_a)
+{
+	zval **a_prt, *a;
+
+	/* Fetch $a from the global symbol table */
+	if (zend_hash_find(&EG(symbol_table), "a", sizeof("a"), (void**) &a_prt) == SUCCESS) {
+		a = *a_prt;
+	} else {
+		/* $GLOBALS['a'] doesn't exist yet, create it */
+		ALLOC_INIT_ZVAL(a);
+
+		zend_hash_add(&EG(symbol_table), "a", sizeof("a"), &a, sizeof(zval*), NULL);
+	}
+
+	/* toss out the old return_value */
+	zval_ptr_dtor(return_value_ptr);
+
+	if (!zval_isref_p(a) && zval_refcount_p(a) > 1) {
+		/* $a is in a copy-on-write reference set
+		 * It must be separated before it can be used.
+		 */
+		zval *newa;
+
+		MAKE_STD_ZVAL(newa);
+		*newa = *a;
+		zval_copy_ctor(newa);
+
+		zval_unset_isref_p(newa);
+		zval_set_refcount_p(newa, 1);
+
+		/* update will cause the copy-on-write for whatever was in the reference set with a */
+		zend_hash_update(&EG(symbol_table), "a", sizeof("a"), &newa, sizeof(zval*), NULL);
+
+		a = newa;
+	}
+
+	/* Promote to full-reference and increase refcount */
+	zval_set_isref_p(a);
+	zval_addref_p(a);
+
+	*return_value_ptr = a;
+}
+
+#endif /* PHP >= 5.1.0 */
+
 static zend_function_entry php_sample_functions[] = {   /* function_entry seems to be replaced with zend_function_entry */
 	PHP_FE(sample_hello_world,         NULL)
 	PHP_FALIAS(sample_hi, sample_hello_world, NULL)
 	PHP_FE(sample_long, NULL)
 	PHP_FE(sample_return_long, NULL)
 	PHP_FE(sample_array_range, NULL)
+#if (PHP_MAJOR_VERSION > 5 || (PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 0))
+	PHP_FE(sample_reference_a, php_sample_retref_arginfo)
+#endif
 	{ NULL, NULL, NULL }
 };
 
