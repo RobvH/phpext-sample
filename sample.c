@@ -206,6 +206,9 @@ PHP_FUNCTION(sample_arg_nullok)
 	zval* val;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z!", &val) == FAILURE) {
+		/* zpp handles firing off the warning about the arguments not matching the 
+		 * expected parameters.
+		 */
 		RETURN_NULL();
 	}
 
@@ -215,11 +218,12 @@ PHP_FUNCTION(sample_arg_nullok)
 }
 
 /* Demonstrates using zend_get_parameters */
-PHP_FUNCTION(sample_onearg_getargs)
+PHP_FUNCTION(sample_onearg_zgp)
 {
 	zval *firstarg;
 
 	if (zend_get_parameters(ZEND_NUM_ARGS(), 1, &firstarg) == FAILURE) {
+		/* need to manually fire of the arguments/parameters mismatch */
 		php_error_docref(NULL TSRMLS_CC, E_WARNING,
 			"Expected at least 1 argument.");
 
@@ -227,6 +231,18 @@ PHP_FUNCTION(sample_onearg_getargs)
 	}
 
 	php_printf("Received a zval for one argument.\n");
+}
+
+PHP_FUNCTION(sample_onearg_zgp_ex)
+{
+	zval **firstarg;
+
+	/* zgp_ex is deprecated */
+	if (zend_get_parameters_ex(1, &firstarg) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	php_printf("Received a zval for one argument.\n");	
 }
 
 
@@ -247,7 +263,8 @@ static zend_function_entry php_sample_functions[] = {   /* function_entry seems 
 	PHP_FE(sample_hello_world3, NULL)
 	PHP_FE(sample_arg_fullnull, NULL)
 	PHP_FE(sample_arg_nullok, NULL)
-	PHP_FE(sample_onearg_getargs, NULL)
+	PHP_FE(sample_onearg_zgp, NULL)
+	PHP_FE(sample_onearg_zgp_ex, NULL)
 	{ NULL, NULL, NULL }
 };
 
