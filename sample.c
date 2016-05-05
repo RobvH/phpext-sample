@@ -131,6 +131,20 @@ PHP_FUNCTION(sample_byref_calltime) /* calltime pass by reference is removed */
 	Z_STRLEN_P(a) += addtl_len;
 }
 
+PHP_FUNCTION(sample_getlong)
+{
+	long foo;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &foo) == FAILURE) {
+		RETURN_NULL();
+	}
+
+	php_printf("The integer value of the parameter you "
+			"passed is: %ld\n", foo);
+
+	RETURN_TRUE;
+}
+
 static zend_function_entry php_sample_functions[] = {   /* function_entry seems to be replaced with zend_function_entry */
 	PHP_FE(sample_hello_world,         NULL)
 	PHP_FALIAS(sample_hi, sample_hello_world, NULL)
@@ -142,6 +156,8 @@ static zend_function_entry php_sample_functions[] = {   /* function_entry seems 
 #endif
 	PHP_FE(sample_byref_calltime, NULL)
 	PHP_FALIAS(sample_byref_compiletime, sample_byref_calltime, php_sample_byref_arginfo)
+	PHP_FE(sample_getlong, NULL)
+
 	{ NULL, NULL, NULL }
 };
 
