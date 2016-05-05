@@ -233,6 +233,7 @@ PHP_FUNCTION(sample_onearg_zgp)
 	php_printf("Received a zval for one argument.\n");
 }
 
+/* zend_get_parameters_ex does not explicitly separate copy-on-write reference sets. */
 PHP_FUNCTION(sample_onearg_zgp_ex)
 {
 	zval **firstarg;
@@ -245,7 +246,26 @@ PHP_FUNCTION(sample_onearg_zgp_ex)
 	php_printf("Received a zval for one argument.\n");	
 }
 
+/* Handling an arbitrary number of arguments */
+PHP_FUNCTION(sample_var_dump)
+{
+	int i, argc = ZEND_NUM_ARGS();
+	zval *** args;
 
+	args = (zval ***)safe_emalloc(argc, sizeof(zval **), 0);
+
+	if (ZEND_NUM_ARGS() == 0 ||
+		zend_get_parameters_array_ex(argc, args) == FAILURE) {
+		efree(args);
+		WRONG_PARAM_COUNT;
+	}
+
+	for (i=0; i<argc; ++i) {
+		php_var_dump(args[i], 1 TSRMLS_CC);
+	}
+
+	efree(args);
+}
 
 static zend_function_entry php_sample_functions[] = {   /* function_entry seems to be replaced with zend_function_entry */
 	PHP_FE(sample_hello_world,         NULL)
@@ -265,6 +285,7 @@ static zend_function_entry php_sample_functions[] = {   /* function_entry seems 
 	PHP_FE(sample_arg_nullok, NULL)
 	PHP_FE(sample_onearg_zgp, NULL)
 	PHP_FE(sample_onearg_zgp_ex, NULL)
+	PHP_FE(sample_var_dump, NULL)
 	{ NULL, NULL, NULL }
 };
 
