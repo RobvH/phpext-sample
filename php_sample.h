@@ -36,6 +36,10 @@ extern zend_module_entry sample_module_entry;
 ZEND_BEGIN_ARG_INFO(php_sample_byref_arginfo, 0) /* pass_rest_by_reference = 0 */
 	ZEND_ARG_PASS_INFO(1) /* byref = 1 */
 ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(php_sample_count_array_arginfo, 0)
+	ZEND_ARG_ARRAY_INFO(0, "arr", 0)
+ZEND_END_ARG_INFO()
 #else
 static unsigned char php_sample_byref_arginfo[] = { 1, BYREF_FORCE };
 #endif

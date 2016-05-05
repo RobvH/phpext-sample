@@ -267,6 +267,33 @@ PHP_FUNCTION(sample_var_dump)
 	efree(args);
 }
 
+/* Arg info and type-hinting */
+PHP_FUNCTION(sample_count_array)
+{
+	zval *arr;
+	/* zpp is going to handling warning if our argument requirements are not met */
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a", &arr) == FAILURE) {
+		RETURN_NULL();
+	}
+
+	RETURN_LONG(zend_hash_num_elements(Z_ARRVAL_P(arr)));
+}
+
+/* demonstrates use of zend arg info (see header) to type hint for zgp */
+PHP_FUNCTION(sample_count_array_zgp)
+{
+	zval *arr;
+
+	if (zend_get_parameters(ZEND_NUM_ARGS(), 1, &arr) == FAILURE) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING,
+			"Expected at least 1 argument.");
+
+		RETURN_NULL();
+	}
+
+	RETURN_LONG(zend_hash_num_elements(Z_ARRVAL_P(arr)));
+}
+
 static zend_function_entry php_sample_functions[] = {   /* function_entry seems to be replaced with zend_function_entry */
 	PHP_FE(sample_hello_world,         NULL)
 	PHP_FALIAS(sample_hi, sample_hello_world, NULL)
@@ -286,6 +313,8 @@ static zend_function_entry php_sample_functions[] = {   /* function_entry seems 
 	PHP_FE(sample_onearg_zgp, NULL)
 	PHP_FE(sample_onearg_zgp_ex, NULL)
 	PHP_FE(sample_var_dump, NULL)
+	PHP_FE(sample_count_array, NULL)
+	PHP_FE(sample_count_array_zgp, php_sample_count_array_arginfo)
 	{ NULL, NULL, NULL }
 };
 
@@ -301,7 +330,6 @@ zend_module_entry sample_module_entry = {
 	PHP_SAMPLE_EXTVER,
 	STANDARD_MODULE_PROPERTIES
 };
-
 
 /* Enable building as a shared module */
 #ifdef COMPILE_DL_SAMPLE
