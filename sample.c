@@ -131,6 +131,7 @@ PHP_FUNCTION(sample_byref_calltime) /* calltime pass by reference is removed */
 	Z_STRLEN_P(a) += addtl_len;
 }
 
+/* demonstrates passing parameters */
 PHP_FUNCTION(sample_getlong)
 {
 	long foo;
@@ -145,6 +146,7 @@ PHP_FUNCTION(sample_getlong)
 	RETURN_TRUE;
 }
 
+/* demonstrates multiple parameters */
 PHP_FUNCTION(sample_hello_world2)
 {
 	char *name;
@@ -153,6 +155,26 @@ PHP_FUNCTION(sample_hello_world2)
 	int greeting_len;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &name, &name_len, &greeting, &greeting_len) == FAILURE) {
+		RETURN_NULL();
+	}
+
+	php_printf("Hello ");
+	PHPWRITE(greeting, greeting_len);
+	php_printf(" ");
+	PHPWRITE(name, name_len);
+	php_printf("!\n");
+}
+
+/* demonstrates optional parameters */
+PHP_FUNCTION(sample_hello_world3)
+{
+	char *name;
+	int name_len;
+	char *greeting = "Mr. / Mrs. ";
+	int greeting_len = sizeof("Mr. / Mrs. ") - 1;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|s", 
+		&name, &name_len, &greeting, &greeting_len) == FAILURE) {
 		RETURN_NULL();
 	}
 
@@ -176,6 +198,7 @@ static zend_function_entry php_sample_functions[] = {   /* function_entry seems 
 	PHP_FALIAS(sample_byref_compiletime, sample_byref_calltime, php_sample_byref_arginfo)
 	PHP_FE(sample_getlong, NULL)
 	PHP_FE(sample_hello_world2, NULL)
+	PHP_FE(sample_hello_world3, NULL)
 	{ NULL, NULL, NULL }
 };
 
