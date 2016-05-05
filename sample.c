@@ -145,6 +145,24 @@ PHP_FUNCTION(sample_getlong)
 	RETURN_TRUE;
 }
 
+PHP_FUNCTION(sample_hello_world2)
+{
+	char *name;
+	int name_len;
+	char *greeting;
+	int greeting_len;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &name, &name_len, &greeting, &greeting_len) == FAILURE) {
+		RETURN_NULL();
+	}
+
+	php_printf("Hello ");
+	PHPWRITE(greeting, greeting_len);
+	php_printf(" ");
+	PHPWRITE(name, name_len);
+	php_printf("!\n");
+}
+
 static zend_function_entry php_sample_functions[] = {   /* function_entry seems to be replaced with zend_function_entry */
 	PHP_FE(sample_hello_world,         NULL)
 	PHP_FALIAS(sample_hi, sample_hello_world, NULL)
@@ -157,7 +175,7 @@ static zend_function_entry php_sample_functions[] = {   /* function_entry seems 
 	PHP_FE(sample_byref_calltime, NULL)
 	PHP_FALIAS(sample_byref_compiletime, sample_byref_calltime, php_sample_byref_arginfo)
 	PHP_FE(sample_getlong, NULL)
-
+	PHP_FE(sample_hello_world2, NULL)
 	{ NULL, NULL, NULL }
 };
 
