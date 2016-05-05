@@ -214,6 +214,23 @@ PHP_FUNCTION(sample_arg_nullok)
 	}
 }
 
+/* Demonstrates using zend_get_parameters */
+PHP_FUNCTION(sample_onearg_getargs)
+{
+	zval *firstarg;
+
+	if (zend_get_parameters(ZEND_NUM_ARGS(), 1, &firstarg) == FAILURE) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING,
+			"Expected at least 1 argument.");
+
+		RETURN_NULL();
+	}
+
+	php_printf("Received a zval for one argument.\n");
+}
+
+
+
 static zend_function_entry php_sample_functions[] = {   /* function_entry seems to be replaced with zend_function_entry */
 	PHP_FE(sample_hello_world,         NULL)
 	PHP_FALIAS(sample_hi, sample_hello_world, NULL)
@@ -230,6 +247,7 @@ static zend_function_entry php_sample_functions[] = {   /* function_entry seems 
 	PHP_FE(sample_hello_world3, NULL)
 	PHP_FE(sample_arg_fullnull, NULL)
 	PHP_FE(sample_arg_nullok, NULL)
+	PHP_FE(sample_onearg_getargs, NULL)
 	{ NULL, NULL, NULL }
 };
 
