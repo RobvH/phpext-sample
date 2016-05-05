@@ -185,6 +185,35 @@ PHP_FUNCTION(sample_hello_world3)
 	php_printf("!\n");
 }
 
+/* demonstrating return a zval IS_NULL vs real null 
+ * sample_arg_fullnull(null);
+*/
+PHP_FUNCTION(sample_arg_fullnull)
+{
+	zval* val;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &val) == FAILURE) {
+		RETURN_NULL();
+	}
+
+	if (Z_TYPE_P(val) == IS_NULL) {
+		/* val = php_sample_make_defaultval(TSRMLS_CC); */
+		php_printf("Got a zval that IS_NULL\n");
+	}
+}
+/* this variation tells zpp that we can accept a real null */
+PHP_FUNCTION(sample_arg_nullok)
+{
+	zval* val;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z!", &val) == FAILURE) {
+		RETURN_NULL();
+	}
+
+	if (!val) {
+		php_printf("Got a real null\n");	
+	}
+}
+
 static zend_function_entry php_sample_functions[] = {   /* function_entry seems to be replaced with zend_function_entry */
 	PHP_FE(sample_hello_world,         NULL)
 	PHP_FALIAS(sample_hi, sample_hello_world, NULL)
@@ -199,6 +228,8 @@ static zend_function_entry php_sample_functions[] = {   /* function_entry seems 
 	PHP_FE(sample_getlong, NULL)
 	PHP_FE(sample_hello_world2, NULL)
 	PHP_FE(sample_hello_world3, NULL)
+	PHP_FE(sample_arg_fullnull, NULL)
+	PHP_FE(sample_arg_nullok, NULL)
 	{ NULL, NULL, NULL }
 };
 
